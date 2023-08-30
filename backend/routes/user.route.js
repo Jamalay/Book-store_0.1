@@ -4,8 +4,9 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 const router = Router();
 
+router.get("/user", usersController.getUser);
 router.post("/signUp", usersController.signUp);
-router.get("/signIn", usersController.signIn);
+router.post("/signIn", usersController.signIn);
 router.patch("/addbook", authMiddleware, usersController.addBook);
 router.patch("/removebook", authMiddleware, usersController.removeBook);
 

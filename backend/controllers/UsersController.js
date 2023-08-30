@@ -45,7 +45,7 @@ module.exports.usersController = {
       };
 
       const token = jwt.sign(payload, process.env.JWT_SEKRET_KEY, {
-        expiresIn: "4h",
+        expiresIn: "24h",
       });
 
       if (!token) {
@@ -83,8 +83,8 @@ module.exports.usersController = {
         cart: canditate.cart,
       };
 
-      const token = jwt.sign(payload, process.env.JWT_SEKRET_KEY, {
-        expiresIn: "4h",
+      const token = await jwt.sign(payload, process.env.JWT_SEKRET_KEY, {
+        expiresIn: "24h",
       });
 
       if (!token) {
@@ -94,6 +94,36 @@ module.exports.usersController = {
       res.json({ token });
     } catch (err) {
       res.json({ error: err.message });
+    }
+  },
+
+  getUser: async (req, res) => {
+    try {
+      const { authorization } = req.headers;
+
+      if (!authorization) {
+        return res.status(401).json({ error: "Нет ключа авторизации" });
+      }
+
+      const [type, token] = authorization.split(" ");
+
+      if (type !== "Bearer") {
+        return res.status(401).json("Неверный тип токена");
+      }
+
+      const data = await jwt.verify(token, process.env.JWT_SEKRET_KEY);
+
+      const user = await User.findById(data._id);
+
+      if (!user) {
+        return res
+          .status(401)
+          .json(`Ошибка авторизации. Возможно, вы не зарегистрированы`);
+      }
+
+      res.json(user);
+    } catch (err) {
+      res.status(401).json(err.message);
     }
   },
 
@@ -107,7 +137,7 @@ module.exports.usersController = {
 
       await user.updateOne({ $push: { cart: req.bookId } });
 
-      res.json(user);
+      await res.json(user);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -119,7 +149,7 @@ module.exports.usersController = {
 
       await user.updateOne({ $pull: { cart: req.bookId } });
 
-      res.json(user);
+      res.json(req.bookId);
     } catch (err) {
       res.json({ error: err.message });
     }
