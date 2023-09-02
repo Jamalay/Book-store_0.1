@@ -14,5 +14,17 @@ router.delete(
   reviewMiddleware,
   reviewController.removeReview
 );
+router.patch(
+  "/book/update_review/:reviewId",
+  reviewMiddleware,
+  reviewController.changeReview
+);
+router.get("/get_reviews", reviewController.getReviews);
+router.patch("/add_like/:reviewId", reviewMiddleware, reviewController.Like);
+router.patch(
+  "/add_dislike/:reviewId",
+  reviewMiddleware,
+  reviewController.DisLike
+);
 
 module.exports = router;

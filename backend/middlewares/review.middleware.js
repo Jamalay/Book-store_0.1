@@ -8,9 +8,7 @@ module.exports = async (req, res, next) => {
     const { title } = req.body;
 
     if (!authorization) {
-      return res
-        .status(401)
-        .json({ error: "Авторизуйтесь, чтобы написать комментарий" });
+      return res.status(401).json({ error: "Вы не авторизованы" });
     }
 
     const [type, token] = authorization.split(" ");
